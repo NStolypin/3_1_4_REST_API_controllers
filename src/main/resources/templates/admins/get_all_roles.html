@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style_for_header.css}" />
+    <title>All people</title>
+</head>
+
+<body>
+    <div th:insert="~{logout :: logout}"></div>
+    <div th:if="${!person.isEmpty()}">
+        <h1 th:text="${'Права доступа для ' + person.get().getUsername() + ':'}"></h1>
+        <hr>
+        <ol>
+            <li th:each="role : ${person.get().getRoles()}">
+                <p th:text="${role.getId()}">ROLE</p>
+            </li>
+        </ol>
+        <hr>
+        <ul>
+            <li th:each="role : ${roles}">
+                <p th:text="${role.getId()}">ROLE</p>
+                <form th:method="POST"
+                    th:action="@{/admin/users/{id}/addrole/{role_id}(id=${person.get().getId()}, role_id=${role.getId()})}">
+                    <input type="submit" value="Дать права" />
+                </form>
+                <form th:method="POST"
+                    th:action="@{/admin/users/{id}/deleterole/{role_id}(id=${person.get().getId()}, role_id=${role.getId()})}">
+                    <input type="submit" value="Забрать права" />
+                </form>
+            </li>
+        </ul>
+    </div>
+    <p th:if="${person.isEmpty()}">Такого пользователя не существует</p>
+</body>
+
+</html>
