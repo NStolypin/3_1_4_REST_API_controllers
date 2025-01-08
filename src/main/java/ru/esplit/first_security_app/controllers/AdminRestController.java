@@ -59,17 +59,7 @@ public class AdminRestController {
     @PostMapping("/person")
     public ResponseEntity<?> create(@RequestBody @Valid PersonDTO personDTO,
             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-
-            throw new PersonNotCreatedException(errorMsg.toString());
-        }
+        eliminateErrors(bindingResult);
         IdPersonDTO idPersonDTO = new IdPersonDTO();
         idPersonDTO.setId(peopleService.saveUser(peopleService.convertToPerson(personDTO, false)));
         return new ResponseEntity<>(idPersonDTO, HttpStatus.OK);
@@ -90,17 +80,7 @@ public class AdminRestController {
     @PatchMapping("/person")
     public ResponseEntity<HttpStatus> patch(@RequestBody @Valid PersonDTO personDTO,
             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMsg = new StringBuilder();
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors) {
-                errorMsg.append(error.getField())
-                        .append(" - ").append(error.getDefaultMessage())
-                        .append(";");
-            }
-
-            throw new PersonNotCreatedException(errorMsg.toString());
-        }
+        eliminateErrors(bindingResult);
         peopleService.saveUser(peopleService.convertToPerson(personDTO, true));
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -119,5 +99,18 @@ public class AdminRestController {
                 e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private void eliminateErrors(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").append(error.getDefaultMessage())
+                        .append(";");
+            }
+            throw new PersonNotCreatedException(errorMsg.toString());
+        }
     }
 }
