@@ -2,8 +2,6 @@ package ru.esplit.first_security_app.models;
 
 import java.util.List;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "Role")
-public class Role implements GrantedAuthority {
+public class Role {
 
     @Id
     @Column(name = "id")
@@ -29,11 +27,6 @@ public class Role implements GrantedAuthority {
 
     public Role(String id) {
         this.id = id;
-    }
-
-    @Override
-    public String getAuthority() {
-        return this.id;
     }
 
     @Override

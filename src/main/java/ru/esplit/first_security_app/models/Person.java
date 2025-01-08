@@ -1,6 +1,5 @@
 package ru.esplit.first_security_app.models;
 
-import java.util.Collection;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -55,9 +54,9 @@ public class Person {
         this.yearOfBirth = yearOfBirth;
     }
 
-    public Collection<? extends Role> getRoles() {
-        return this.roles;
-    }
+    // public Collection<? extends Role> getRoles() {
+    //     return this.roles;
+    // }
 
     @Override
     public int hashCode() {

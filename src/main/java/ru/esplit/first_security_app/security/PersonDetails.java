@@ -1,12 +1,15 @@
 package ru.esplit.first_security_app.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.RequiredArgsConstructor;
 import ru.esplit.first_security_app.models.Person;
+import ru.esplit.first_security_app.models.Role;
 
 @RequiredArgsConstructor
 public class PersonDetails implements UserDetails {
@@ -15,7 +18,12 @@ public class PersonDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.person.getRoles();
+        List<Role> roles = this.person.getRoles();
+        List<GrantedAuthority> authorities = new ArrayList<>();
+         for (Role role : roles) {
+            authorities.add(new RoleGrantedAuthority(role));
+        }
+        return authorities;
     }
 
     @Override
