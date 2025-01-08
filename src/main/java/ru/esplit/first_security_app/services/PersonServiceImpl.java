@@ -19,16 +19,43 @@ import ru.esplit.first_security_app.util.PersonNotFoundException;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PeopleServiceImpl implements PeopleService {
+public class PersonServiceImpl implements PersonService {
 
     private final PeopleRepository peopleRepository;
     private final RegistrationService registrationService;
     private final RoleService roleService;
 
     @Override
+    public List<Person> getAllPeople() {
+        return peopleRepository.findAll();
+    }
+
+    @Override
     public Person findOne(long id) {
         Optional<Person> foundPerson = peopleRepository.findById(id);
         return foundPerson.orElseThrow(PersonNotFoundException::new);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Override
+    public void createUser(Person person) {
+        registrationService.registerUser(person);
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(long id, Person updatedUser) {
+        Person personForUpdated = findOne(id);
+        updatedUser.setId(id);
+        registrationService.registerUser(updatedUser);
+    }
+    
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Override
+    public void deleteUser(long id, long principalId) {
+        if (id != principalId) {
+            peopleRepository.deleteById(id);
+        }
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)

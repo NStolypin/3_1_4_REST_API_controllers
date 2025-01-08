@@ -17,12 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import ru.esplit.first_security_app.dto.IdPersonDTO;
 import ru.esplit.first_security_app.dto.PersonDTO;
 import ru.esplit.first_security_app.security.PersonDetails;
-import ru.esplit.first_security_app.services.AdminService;
-import ru.esplit.first_security_app.services.PeopleService;
-import ru.esplit.first_security_app.services.RoleService;
+import ru.esplit.first_security_app.services.PersonService;
 import ru.esplit.first_security_app.util.PersonDoNotDeleteException;
 import ru.esplit.first_security_app.util.PersonErrorResponse;
 import ru.esplit.first_security_app.util.PersonNotCreatedException;
@@ -31,29 +30,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class AdminRestController {
 
-    private final AdminService adminService;
-    private final PeopleService peopleService;
-
-    public AdminRestController(AdminService adminService,
-            RoleService roleService,
-            PeopleService peopleService) {
-        this.adminService = adminService;
-        this.peopleService = peopleService;
-    }
+    private final PersonService personService;
 
     @GetMapping("/allpeople")
     public List<PersonDTO> showAllUsers(Model model) {
         PersonDTO personDTO = new PersonDTO();
-        return personDTO.getPersonDTOList(adminService.getAllPeople());
+        return personDTO.getPersonDTOList(personService.getAllPeople());
     }
 
     @GetMapping("/person/{id}")
     public PersonDTO getPerson(@PathVariable("id") long id) {
         PersonDTO personDTO = new PersonDTO();
-        return personDTO.getPersonDTO(peopleService.findOne(id));
+        return personDTO.getPersonDTO(personService.findOne(id));
     }
 
     @PostMapping("/person")
@@ -61,7 +53,7 @@ public class AdminRestController {
             BindingResult bindingResult) {
         eliminateErrors(bindingResult);
         IdPersonDTO idPersonDTO = new IdPersonDTO();
-        idPersonDTO.setId(peopleService.saveUser(peopleService.convertToPerson(personDTO, false)));
+        idPersonDTO.setId(personService.saveUser(personService.convertToPerson(personDTO, false)));
         return new ResponseEntity<>(idPersonDTO, HttpStatus.OK);
     }
 
@@ -73,7 +65,7 @@ public class AdminRestController {
             String errorMsg = "Вы не можете удалить сами себя";
             throw new PersonDoNotDeleteException(errorMsg);
         }
-        adminService.deleteUser(idPersonDTO.getId(), personDetails.getPerson().getId());
+        personService.deleteUser(idPersonDTO.getId(), personDetails.getPerson().getId());
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
@@ -81,7 +73,7 @@ public class AdminRestController {
     public ResponseEntity<HttpStatus> patch(@RequestBody @Valid PersonDTO personDTO,
             BindingResult bindingResult) {
         eliminateErrors(bindingResult);
-        peopleService.saveUser(peopleService.convertToPerson(personDTO, true));
+        personService.saveUser(personService.convertToPerson(personDTO, true));
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

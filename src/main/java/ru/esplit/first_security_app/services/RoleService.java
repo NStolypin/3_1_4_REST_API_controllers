@@ -12,9 +12,5 @@ public interface RoleService {
 
     Optional<Role> findById(String id);
 
-    void takeBackTheRole(long id, String role_id);
-
-    void giveTheRole(long id, String role_id);
-
     Optional<Role> convertToRole(RoleDTO roleDTO);
 }
